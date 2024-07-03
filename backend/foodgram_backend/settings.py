@@ -115,7 +115,6 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 SEEDDATA_DIR = BASE_DIR / "static/data"
 SEED_USERS_PASSWORD = os.getenv("SEED_USERS_PASSWORD", "somepass")
-
 ADMIN_USERNAME = os.getenv("ADMIN_USERNAME", "admin")
 ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "admin@admin.com")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "somepass")
