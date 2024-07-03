@@ -1,6 +1,7 @@
 import os
 from csv import DictReader
 
+from django.db import connection
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.management import BaseCommand
@@ -25,6 +26,7 @@ class Command(BaseCommand):
         self.load_user_favorite_recipes()
         self.load_user_shopping_cart()
         self.load_subscriptions()
+        self.update_intial_ids()
 
     def clear_database_data(self):
         models_to_clear = [
@@ -174,3 +176,33 @@ class Command(BaseCommand):
             )
             self.try_save(subscription, "subscription")
             i += 1
+
+    def update_intial_ids(self):
+        '''
+        При загрузке тестовых данных id сущностей указывался вручную.
+        Id в таблицах в таком случае не инкрементируется, приходится
+        задавать начальное значение вручную.
+        '''
+        tables = [
+            'domain_ingredient',
+            'domain_recipe',
+            'domain_recipeingredient',
+            'domain_recipetag',
+            'domain_subscription',
+            'domain_tag',
+            'domain_user',
+            'domain_user_groups',
+            'domain_user_user_permissions',
+            'domain_userfavoriterecipes',
+            'domain_usershoppingcart'
+        ]
+        commands ='\n'.join([
+            (
+                f'SELECT setval(pg_get_serial_sequence('
+                f'\'\"{table}\"\',\'id\'), '
+                f'coalesce(max(\"id\"), 1), max(\"id\") IS NOT null) FROM '
+                f'\"{table}\";'
+            ) for table in tables
+        ])
+        with connection.cursor() as cursor:
+            cursor.execute(commands)
