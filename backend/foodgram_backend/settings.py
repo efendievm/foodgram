@@ -43,10 +43,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'foodgram_backend.urls'
 
+TEMPLATES_DIR = BASE_DIR / 'templates'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [TEMPLATES_DIR],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -104,17 +105,19 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
-STATIC_FILES_DIR = BASE_DIR / 'static'
+STATICFILES_DIRS = ((BASE_DIR / 'static/'),)
 STATIC_ROOT = BASE_DIR / 'collected_static'
 
 MEDIA_URL = '/media/'
 MEDIA_FILES_DIR = BASE_DIR / 'media'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+SEEDDATA_DIR = BASE_DIR / 'static/data'
+SEED_USERS_PASSWORD = os.getenv('SEED_USERS_PASSWORD', 'somepass')
+ADMIN_USERNAME = os.getenv('ADMIN_USERNAME', 'admin')
+ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'admin@admin.com')
+ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD', 'somepass')
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'domain.User'
-
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
-]

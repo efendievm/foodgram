@@ -44,12 +44,12 @@ class Command(BaseCommand):
 
     def open_file(self, name):
         return open(os.path.join(
-            settings.STATIC_FILES_DIR,
-            f'data/{name}.csv'), encoding='utf-8')
+            settings.SEEDDATA_DIR,
+            f'{name}.csv'), encoding='utf-8')
 
     def load_users(self):
         print('Loading Users')
-        password = os.getenv('SEED_USERS_PASSWORD', 'somepass')
+        password = settings.SEED_USERS_PASSWORD
         i = 1
         for row in DictReader(self.open_file('users')):
             user = User(
@@ -62,6 +62,10 @@ class Command(BaseCommand):
             user.set_password(password)
             self.try_save(user, 'user')
             i += 1
+        User.objects.create_superuser(
+            settings.ADMIN_USERNAME,
+            settings.ADMIN_EMAIL,
+            settings.ADMIN_PASSWORD)
 
     def load_ingredients(self):
         print('Loading Ingredients')
