@@ -34,7 +34,9 @@ class RecipeFilterSet(FilterSet):
     is_in_shopping_cart = NumberFilter(field_name="is_in_shopping_cart")
     author = NumberFilter(field_name="author__pk")
     tags = ModelMultipleChoiceFilter(
-        field_name="tags__slug", to_field_name="slug", queryset=Tag.objects.all()
+        field_name="tags__slug",
+        to_field_name="slug",
+        queryset=Tag.objects.all()
     )
 
     class Meta:

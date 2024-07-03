@@ -9,28 +9,16 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from domain.models import (
-    Ingredient,
-    Recipe,
-    RecipeIngredient,
-    Subscription,
-    Tag,
-    UserFavoriteRecipes,
-    UserShoppingCart,
-)
+from domain.models import (Ingredient, Recipe, RecipeIngredient, Subscription,
+                           Tag, UserFavoriteRecipes, UserShoppingCart)
 
 from .permissions import IsAuthorOrReadOnly
-from .serializers import (
-    IngredientSerializer,
-    RecipeMinifiedSerializer,
-    RecipeSerializer,
-    TagSerializer,
-    UserCreateSerializer,
-    UserSerializer,
-    UserSetAvatarSerializer,
-    UserWithRecipesSerializer,
-)
-from .utils import Pagination, RecipeFilterSet, SearchFilter, get_or_create_short_link
+from .serializers import (IngredientSerializer, RecipeMinifiedSerializer,
+                          RecipeSerializer, TagSerializer,
+                          UserCreateSerializer, UserSerializer,
+                          UserSetAvatarSerializer, UserWithRecipesSerializer)
+from .utils import (Pagination, RecipeFilterSet, SearchFilter,
+                    get_or_create_short_link)
 
 User = get_user_model()
 
@@ -99,11 +87,15 @@ class RecipeViewSet(viewsets.ModelViewSet):
         )
         shopping_list = [f"Список покупок {request.user.username}"]
         shopping_list.extend(
-            f'{ing["name"]}: {ing["amount"]} {ing["measurement_unit"]}' for ing in ings
+            f'{ing["name"]}: {ing["amount"]} {ing["measurement_unit"]}'
+            for ing in ings
         )
         shopping_list = "\n".join(shopping_list)
         filename = "shopping_list.txt"
-        response = HttpResponse(shopping_list, content_type="text.txt; charset=utf-8")
+        response = HttpResponse(
+            shopping_list,
+            content_type="text.txt; charset=utf-8"
+        )
         response["Content-Disposition"] = f"attachment; filename={filename}"
         return response
 
@@ -111,7 +103,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe = get_object_or_404(Recipe, pk=pk)
         if request.method == "DELETE":
             try:
-                to_delete = model_cls.objects.get(user=request.user, recipe=recipe)
+                to_delete = model_cls.objects.get(
+                    user=request.user,
+                    recipe=recipe
+                )
                 to_delete.delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
             except model_cls.DoesNotExist:
@@ -120,13 +115,18 @@ class RecipeViewSet(viewsets.ModelViewSet):
                     data=f"Данный рецепт не был в {target}",
                 )
 
-        _, created = model_cls.objects.get_or_create(user=request.user, recipe=recipe)
+        _, created = model_cls.objects.get_or_create(
+            user=request.user,
+            recipe=recipe
+        )
         if not created:
             return Response(
-                status=status.HTTP_400_BAD_REQUEST, data=f"Данный рецепт уже в {target}"
+                status=status.HTTP_400_BAD_REQUEST,
+                data=f"Данный рецепт уже в {target}"
             )
         return Response(
-            status=status.HTTP_201_CREATED, data=RecipeMinifiedSerializer(recipe).data
+            status=status.HTTP_201_CREATED,
+            data=RecipeMinifiedSerializer(recipe).data
         )
 
 
@@ -152,7 +152,9 @@ class UserViewSet(
 
     def get_queryset(self):
         if self.action in ["subscriptions", "subscribe"]:
-            return User.detailed.subscribed_with_recipes(self.request.user).all()
+            return User.detailed.subscribed_with_recipes(
+                self.request.user
+            ).all()
         return User.detailed.is_subscribed(self.request.user).all()
 
     @action(detail=False, methods=["get"])
@@ -175,7 +177,10 @@ class UserViewSet(
             request.user.avatar = None
             request.user.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        serializer = UserSetAvatarSerializer(data=request.data, instance=request.user)
+        serializer = UserSetAvatarSerializer(
+            data=request.data,
+            instance=request.user
+        )
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
@@ -211,7 +216,8 @@ class UserViewSet(
                 )
         if following == request.user:
             return Response(
-                status=status.HTTP_400_BAD_REQUEST, data="Подписка на себя запрещена"
+                status=status.HTTP_400_BAD_REQUEST,
+                data="Подписка на себя запрещена"
             )
         _, created = Subscription.objects.get_or_create(
             user=request.user, following=following

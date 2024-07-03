@@ -20,7 +20,9 @@ class DetailedUserManager(BaseUserManager):
             self.is_subscribed(user)
             .filter(is_subscribed=True)
             .prefetch_related(
-                Prefetch("recipes", queryset=Recipe.objects.order_by("-pub_date"))
+                Prefetch(
+                    "recipes",
+                    queryset=Recipe.objects.order_by("-pub_date"))
             )
             .annotate(recipes_count=Count("recipes"))
         )
@@ -51,7 +53,11 @@ class CustomUserAccountManager(BaseUserManager):
 
 
 class User(AbstractUser):
-    avatar = models.ImageField("Аватар", upload_to="avatars/", null=True, blank=True)
+    avatar = models.ImageField(
+        "Аватар",
+        upload_to="avatars/",
+        null=True,
+        blank=True)
     email = models.EmailField("Email", unique=True)
     role = models.CharField(default="user", max_length=10, blank=False)
     is_staff = models.BooleanField(default=False)
@@ -106,16 +112,23 @@ class Ingredient(models.Model):
 class DetailedRecipeManager(models.Manager):
     def annotate_extra_info(self, user):
         query = self.prefetch_related(
-            "tags", Prefetch("recipeingredient_set", RecipeIngredient.detailed.all())
+            "tags",
+            Prefetch("recipeingredient_set", RecipeIngredient.detailed.all())
         )
         user = user if user.is_authenticated else None
         author = Prefetch("author", queryset=User.detailed.is_subscribed(user))
         return query.prefetch_related(author).annotate(
             is_favorited=Exists(
-                UserFavoriteRecipes.objects.filter(recipe_id=OuterRef("pk"), user=user)
+                UserFavoriteRecipes.objects.filter(
+                    recipe_id=OuterRef("pk"),
+                    user=user
+                )
             ),
             is_in_shopping_cart=Exists(
-                UserShoppingCart.objects.filter(recipe_id=OuterRef("pk"), user=user)
+                UserShoppingCart.objects.filter(
+                    recipe_id=OuterRef("pk"),
+                    user=user
+                )
             ),
         )
 
@@ -127,11 +140,19 @@ class Recipe(models.Model):
     image = models.ImageField(upload_to="recipes/", null=True, blank=True)
     cooking_time = models.SmallIntegerField("Время приготовления (в минутах)")
     author = models.ForeignKey(
-        User, verbose_name="Автор", on_delete=models.CASCADE, related_name="recipes"
+        User,
+        verbose_name="Автор",
+        on_delete=models.CASCADE,
+        related_name="recipes"
     )
-    tags = models.ManyToManyField(Tag, verbose_name="Тэги", through="RecipeTag")
+    tags = models.ManyToManyField(
+        Tag,
+        verbose_name="Тэги",
+        through="RecipeTag")
     ingredients = models.ManyToManyField(
-        Ingredient, verbose_name="Список ингредиентов", through="RecipeIngredient"
+        Ingredient,
+        verbose_name="Список ингредиентов",
+        through="RecipeIngredient"
     )
     shopping_cart = models.ManyToManyField(
         User,
@@ -163,9 +184,15 @@ class DetaiedRecipeManager(models.Manager):
 
 
 class RecipeIngredient(models.Model):
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, verbose_name="Рецепт")
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        verbose_name="Рецепт"
+    )
     ingredient = models.ForeignKey(
-        Ingredient, on_delete=models.CASCADE, verbose_name="Ингредиент"
+        Ingredient,
+        on_delete=models.CASCADE,
+        verbose_name="Ингредиент"
     )
     amount = models.SmallIntegerField("Количество")
 
@@ -182,8 +209,16 @@ class RecipeIngredient(models.Model):
 
 
 class RecipeTag(models.Model):
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, verbose_name="Рецепт")
-    tag = models.ForeignKey(Tag, on_delete=models.CASCADE, verbose_name="Тэг")
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        verbose_name="Рецепт"
+    )
+    tag = models.ForeignKey(
+        Tag,
+        on_delete=models.CASCADE,
+        verbose_name="Тэг"
+    )
 
     class Meta:
         unique_together = ("recipe", "tag")
@@ -195,7 +230,10 @@ class RecipeTag(models.Model):
 
 
 class UserFavoriteRecipes(models.Model):
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, verbose_name="Рецепт")
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        verbose_name="Рецепт")
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, verbose_name="Пользователь"
     )
@@ -210,7 +248,11 @@ class UserFavoriteRecipes(models.Model):
 
 
 class UserShoppingCart(models.Model):
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, verbose_name="Рецепт")
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        verbose_name="Рецепт"
+    )
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, verbose_name="Пользователь"
     )

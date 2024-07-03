@@ -5,16 +5,9 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.management import BaseCommand
 
-from domain.models import (
-    Ingredient,
-    Recipe,
-    RecipeIngredient,
-    RecipeTag,
-    Subscription,
-    Tag,
-    UserFavoriteRecipes,
-    UserShoppingCart,
-)
+from domain.models import (Ingredient, Recipe, RecipeIngredient, RecipeTag,
+                           Subscription, Tag, UserFavoriteRecipes,
+                           UserShoppingCart)
 
 User = get_user_model()
 
@@ -57,7 +50,8 @@ class Command(BaseCommand):
 
     def open_file(self, name):
         return open(
-            os.path.join(settings.SEEDDATA_DIR, f"{name}.csv"), encoding="utf-8"
+            os.path.join(settings.SEEDDATA_DIR, f"{name}.csv"),
+            encoding="utf-8"
         )
 
     def load_users(self):
@@ -77,7 +71,9 @@ class Command(BaseCommand):
             self.try_save(user, "user")
             i += 1
         User.objects.create_superuser(
-            settings.ADMIN_USERNAME, settings.ADMIN_EMAIL, settings.ADMIN_PASSWORD
+            settings.ADMIN_USERNAME,
+            settings.ADMIN_EMAIL,
+            settings.ADMIN_PASSWORD
         )
 
     def load_ingredients(self):
@@ -85,7 +81,9 @@ class Command(BaseCommand):
         i = 1
         for row in DictReader(self.open_file("ingredients")):
             ingredient = Ingredient(
-                id=i, name=row["name"], measurement_unit=row["measurement_unit"]
+                id=i,
+                name=row["name"],
+                measurement_unit=row["measurement_unit"]
             )
             self.try_save(ingredient, "ingredient")
             i += 1
@@ -94,7 +92,11 @@ class Command(BaseCommand):
         print("Loading Tags")
         i = 1
         for row in DictReader(self.open_file("tags")):
-            tag = Tag(id=i, name=row["name"], slug=row["slug"])
+            tag = Tag(
+                id=i,
+                name=row["name"],
+                slug=row["slug"]
+            )
             self.try_save(tag, "tag")
             i += 1
 
@@ -130,7 +132,10 @@ class Command(BaseCommand):
         print("Loading Recipe Tags")
         i = 1
         for row in DictReader(self.open_file("recipe_tags")):
-            recipe_tag = RecipeTag(id=i, recipe_id=row["recipe"], tag_id=row["tag"])
+            recipe_tag = RecipeTag(
+                id=i,
+                recipe_id=row["recipe"],
+                tag_id=row["tag"])
             self.try_save(recipe_tag, "recipe_tag")
             i += 1
 
@@ -139,7 +144,9 @@ class Command(BaseCommand):
         i = 1
         for row in DictReader(self.open_file("users_favorite_recipes")):
             user_favorite_recipe = UserFavoriteRecipes(
-                id=i, user_id=row["user"], recipe_id=row["recipe"]
+                id=i,
+                user_id=row["user"],
+                recipe_id=row["recipe"]
             )
             self.try_save(user_favorite_recipe, "user_favorite_recipe")
             i += 1
@@ -149,7 +156,9 @@ class Command(BaseCommand):
         i = 1
         for row in DictReader(self.open_file("users_shopping_carts")):
             user_shopping_cart = UserShoppingCart(
-                id=i, user_id=row["user"], recipe_id=row["recipe"]
+                id=i,
+                user_id=row["user"],
+                recipe_id=row["recipe"]
             )
             self.try_save(user_shopping_cart, "user_shopping_cart")
             i += 1
@@ -159,7 +168,9 @@ class Command(BaseCommand):
         i = 1
         for row in DictReader(self.open_file("subscriptions")):
             subscription = Subscription(
-                id=i, user_id=row["user"], following_id=row["following"]
+                id=i,
+                user_id=row["user"],
+                following_id=row["following"]
             )
             self.try_save(subscription, "subscription")
             i += 1

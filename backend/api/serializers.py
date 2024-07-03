@@ -39,7 +39,14 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("id", "username", "first_name", "last_name", "email", "password")
+        fields = (
+            "id",
+            "username",
+            "first_name",
+            "last_name",
+            "email",
+            "password"
+        )
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -192,10 +199,18 @@ class RecipeSerializer(serializers.ModelSerializer):
             lambda ingredient: ingredient.get("amount") < 1, ingredients
         )
         if list(invalid_data):
-            raise ValidationError("Количество ингредиентов должно быть больше 1")
-        existing_ingredients = Ingredient.objects.filter(id__in=ingredient_ids).count()
+            raise ValidationError(
+                "Количество ингредиентов должно быть больше 1"
+            )
+        existing_ingredients = (
+            Ingredient.objects
+            .filter(id__in=ingredient_ids)
+            .count()
+        )
         if existing_ingredients != len(ingredient_ids):
-            raise ValidationError("Один или несколько ингредиентов не существуют")
+            raise ValidationError(
+                "Один или несколько ингредиентов не существуют"
+            )
 
         attrs["tags"] = tags
         attrs["ingredients"] = ingredients
