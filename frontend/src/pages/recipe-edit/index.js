@@ -371,6 +371,7 @@ const RecipeEdit = ({ onItemDelete }) => {
               }}
               placeholder="0"
               value={recipeTime}
+              type="number"
             />
             <div className={styles.cookingTimeUnit}>мин.</div>
           </div>

@@ -136,10 +136,10 @@ const RecipeCreate = ({ onEdit }) => {
               name: recipeName,
               ingredients: recipeIngredients.map((item) => ({
                 id: item.id,
-                amount: item.amount,
+                amount: Number(item.amount),
               })),
               tags: value.filter((item) => item.value).map((item) => item.id),
-              cooking_time: recipeTime,
+              cooking_time: Number(recipeTime),
               image: recipeFile,
             };
             api
@@ -310,6 +310,7 @@ const RecipeCreate = ({ onEdit }) => {
               }}
               value={recipeTime}
               placeholder="0"
+              type="number"
             />
             <div className={styles.cookingTimeUnit}>мин.</div>
           </div>
