@@ -1,10 +1,10 @@
 import os
 from csv import DictReader
 
-from django.db import connection
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.management import BaseCommand
+from django.db import connection
 from domain.models import (Ingredient, Recipe, RecipeIngredient, RecipeTag,
                            Subscription, Tag, UserFavoriteRecipes,
                            UserShoppingCart)
@@ -196,7 +196,7 @@ class Command(BaseCommand):
             'domain_userfavoriterecipes',
             'domain_usershoppingcart'
         ]
-        commands ='\n'.join([
+        commands = '\n'.join([
             (
                 f'SELECT setval(pg_get_serial_sequence('
                 f'\'\"{table}\"\',\'id\'), '
