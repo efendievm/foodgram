@@ -1,9 +1,9 @@
 import os
 from csv import DictReader
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.management import BaseCommand
-
 from domain.models import (Ingredient, Recipe, RecipeIngredient, RecipeTag,
                            Subscription, Tag, UserFavoriteRecipes,
                            UserShoppingCart)
