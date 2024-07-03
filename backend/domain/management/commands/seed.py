@@ -70,9 +70,10 @@ class Command(BaseCommand):
             self.try_save(user, "user")
             i += 1
         User.objects.create_superuser(
-            settings.ADMIN_USERNAME,
-            settings.ADMIN_EMAIL,
-            settings.ADMIN_PASSWORD
+            id=i,
+            username=settings.ADMIN_USERNAME,
+            email=settings.ADMIN_EMAIL,
+            password=settings.ADMIN_PASSWORD,
         )
 
     def load_ingredients(self):
