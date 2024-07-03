@@ -4,10 +4,9 @@ from string import ascii_letters, digits
 
 from django.core.files.base import ContentFile
 from django_filters import FilterSet, ModelMultipleChoiceFilter, NumberFilter
+from domain.models import Recipe, ShortLink, Tag
 from rest_framework import filters, serializers
 from rest_framework.pagination import PageNumberPagination
-
-from domain.models import Recipe, ShortLink, Tag
 
 
 class Base64ImageField(serializers.ImageField):

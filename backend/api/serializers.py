@@ -3,7 +3,6 @@ from django.core.validators import RegexValidator
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueValidator
-
 from domain.models import Ingredient, Recipe, RecipeIngredient, Tag
 
 from .utils import Base64ImageField
