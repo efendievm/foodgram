@@ -1,11 +1,10 @@
 from django.contrib.auth import get_user_model
-from django.db.models import F, Sum
-from django.http.response import HttpResponse
+from django.http.response import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.serializers import SetPasswordSerializer
-from domain.models import (Ingredient, Recipe, RecipeIngredient, Subscription,
-                           Tag, UserFavoriteRecipes, UserShoppingCart)
+from domain.models import (Ingredient, Recipe, Subscription, Tag,
+                           UserFavoriteRecipes, UserShoppingCart)
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -16,6 +15,7 @@ from .serializers import (IngredientSerializer, RecipeMinifiedSerializer,
                           RecipeSerializer, TagSerializer,
                           UserCreateSerializer, UserSerializer,
                           UserSetAvatarSerializer, UserWithRecipesSerializer)
+from .services import get_shopping_list
 from .utils import (Pagination, RecipeFilterSet, SearchFilter,
                     get_or_create_short_link)
 
@@ -49,7 +49,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user)
 
     def get_permissions(self):
-        if self.action in ["favorite", "shopping_cart"]:
+        if (
+            self.action in [
+                'favorite',
+                'shopping_cart',
+                'download_shopping_cart'
+            ]
+        ):
             self.permission_classes = (IsAuthenticated,)
         else:
             self.permission_classes = (IsAuthorOrReadOnly,)
@@ -76,27 +82,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["get"])
     def download_shopping_cart(self, request, *args, **kwargs):
-        ings = (
-            RecipeIngredient.objects.filter(recipe__shopping_cart=request.user)
-            .values(
-                name=F("ingredient__name"),
-                measurement_unit=F("ingredient__measurement_unit"),
-            )
-            .annotate(amount=Sum("amount"))
-        )
-        shopping_list = [f"Список покупок {request.user.username}"]
-        shopping_list.extend(
-            f'{ing["name"]}: {ing["amount"]} {ing["measurement_unit"]}'
-            for ing in ings
-        )
-        shopping_list = "\n".join(shopping_list)
-        filename = "shopping_list.txt"
-        response = HttpResponse(
+        shopping_list = get_shopping_list(request.user)
+        return FileResponse(
             shopping_list,
-            content_type="text.txt; charset=utf-8"
+            as_attachment=True,
+            filename='shopping_list.txt'
         )
-        response["Content-Disposition"] = f"attachment; filename={filename}"
-        return response
 
     def __handle_favorites_shopping_cart(self, request, pk, model_cls, target):
         recipe = get_object_or_404(Recipe, pk=pk)
