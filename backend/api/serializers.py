@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.contrib.auth import get_user_model
 from django.core.validators import RegexValidator
 from domain.models import Ingredient, Recipe, RecipeIngredient, Tag
@@ -170,6 +171,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         self.__validate_ingredients(attrs)
         return attrs
 
+    @transaction.atomic
     def create(self, validated_data):
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
