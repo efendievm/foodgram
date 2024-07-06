@@ -5,7 +5,8 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.management import BaseCommand
 from django.db import connection
-from domain.models import (Ingredient, Recipe, RecipeIngredient, RecipeTag,
+
+from recipes.models import (Ingredient, Recipe, RecipeIngredient, RecipeTag,
                            Subscription, Tag, UserFavoriteRecipes,
                            UserShoppingCart)
 
@@ -184,17 +185,17 @@ class Command(BaseCommand):
         задавать начальное значение вручную.
         '''
         tables = [
-            'domain_ingredient',
-            'domain_recipe',
-            'domain_recipeingredient',
-            'domain_recipetag',
-            'domain_subscription',
-            'domain_tag',
-            'domain_user',
-            'domain_user_groups',
-            'domain_user_user_permissions',
-            'domain_userfavoriterecipes',
-            'domain_usershoppingcart'
+            'recipes_ingredient',
+            'recipes_recipe',
+            'recipes_recipeingredient',
+            'recipes_recipetag',
+            'recipes_subscription',
+            'recipes_tag',
+            'recipes_user',
+            'recipes_user_groups',
+            'recipes_user_user_permissions',
+            'recipes_userfavoriterecipes',
+            'recipes_usershoppingcart'
         ]
         commands = '\n'.join([
             (

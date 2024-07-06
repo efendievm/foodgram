@@ -1,5 +1,6 @@
 from django.db.models import F, Sum
-from domain.models import RecipeIngredient
+
+from recipes.models import RecipeIngredient
 
 
 def get_shopping_list(user):

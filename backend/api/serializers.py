@@ -1,11 +1,11 @@
 from django.db import transaction
 from django.contrib.auth import get_user_model
 from django.core.validators import RegexValidator
-from domain.models import Ingredient, Recipe, RecipeIngredient, Tag
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueValidator
 
+from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
 from .utils import Base64ImageField
 
 User = get_user_model()
@@ -50,14 +50,11 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    is_subscribed = serializers.SerializerMethodField(read_only=True)
+    is_subscribed = serializers.BooleanField(read_only=True, default=False)
     avatar = serializers.SerializerMethodField(read_only=True)
 
     def get_avatar(self, obj):
         return obj.avatar.url if obj.avatar else None
-
-    def get_is_subscribed(self, obj):
-        return obj.is_subscribed
 
     class Meta:
         model = User
@@ -96,10 +93,7 @@ class RecipeMinifiedSerializer(serializers.ModelSerializer):
 
 class UserWithRecipesSerializer(UserSerializer):
     recipes = serializers.SerializerMethodField()
-    recipes_count = serializers.SerializerMethodField()
-
-    def get_recipes_count(self, obj):
-        return obj.recipes_count
+    recipes_count = serializers.IntegerField()
 
     def get_recipes(self, obj):
         query = obj.recipes.all()
@@ -142,18 +136,12 @@ class RecipeSerializer(serializers.ModelSerializer):
         many=True, source='recipeingredient_set', read_only=True
     )
     tags = TagSerializer(many=True, read_only=True)
-    is_favorited = serializers.SerializerMethodField(read_only=True)
-    is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
+    is_favorited = serializers.BooleanField(read_only=True, default=False)
+    is_in_shopping_cart = serializers.BooleanField(read_only=True, default=False)
     image = Base64ImageField()
     name = serializers.CharField(max_length=256)
     text = serializers.CharField()
     cooking_time = serializers.IntegerField(min_value=1)
-
-    def get_is_favorited(self, obj):
-        return obj.is_favorited
-
-    def get_is_in_shopping_cart(self, obj):
-        return obj.is_in_shopping_cart
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -178,9 +166,6 @@ class RecipeSerializer(serializers.ModelSerializer):
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
         self.__set_ingredients(recipe, ingredients)
-        setattr(recipe.author, 'is_subscribed', False)
-        setattr(recipe, 'is_favorited', False)
-        setattr(recipe, 'is_in_shopping_cart', False)
         return recipe
 
     def update(self, instance, validated_data):

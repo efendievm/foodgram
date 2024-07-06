@@ -27,7 +27,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "djoser",
     "corsheaders",
-    "domain.apps.DomainConfig",
+    "recipes.apps.RecipesConfig",
     "api.apps.ApiConfig",
 ]
 
@@ -121,4 +121,4 @@ ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "somepass")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-AUTH_USER_MODEL = "domain.User"
+AUTH_USER_MODEL = "recipes.User"

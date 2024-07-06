@@ -3,14 +3,14 @@ from django.http.response import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.serializers import SetPasswordSerializer
-from domain.models import (Ingredient, Recipe, Subscription, Tag,
-                           UserFavoriteRecipes, UserShoppingCart)
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from .permissions import IsAuthorOrReadOnly
+from recipes.models import (Ingredient, Recipe, Subscription, Tag,
+                           UserFavoriteRecipes, UserShoppingCart)
 from .serializers import (IngredientSerializer, RecipeMinifiedSerializer,
                           RecipeSerializer, TagSerializer,
                           UserCreateSerializer, UserSerializer,
