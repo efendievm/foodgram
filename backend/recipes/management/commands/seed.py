@@ -7,8 +7,9 @@ from django.core.management import BaseCommand
 from django.db import connection
 
 from recipes.models import (Ingredient, Recipe, RecipeIngredient, RecipeTag,
-                           Subscription, Tag, UserFavoriteRecipes,
-                           UserShoppingCart)
+                            Subscription, Tag, UserFavoriteRecipes,
+                            UserShoppingCart)
+
 
 User = get_user_model()
 
