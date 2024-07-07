@@ -73,6 +73,8 @@ const SingleCard = ({ loadItem, updateOrders, byShortLink }) => {
       })
       .then((res) => {
         history.push(`/recipes/${res["id"]}`)
+        setRecipe(res);
+        setLoading(false);
       })
       .catch((err) => {
         history.push("/not-found");
