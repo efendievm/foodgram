@@ -224,7 +224,7 @@ class UserViewSet(
                 following, context={"request": request}
             ).data,
         )
-    
+
 
 @api_view(['GET'])
 def get_recipe(request, short_link):
