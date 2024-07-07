@@ -7,7 +7,7 @@ from django.core.management import BaseCommand
 from django.db import connection
 
 from recipes.models import (Ingredient, Recipe, RecipeIngredient, RecipeTag,
-                            Subscription, Tag, UserFavoriteRecipes,
+                            ShortLink, Subscription, Tag, UserFavoriteRecipes,
                             UserShoppingCart)
 
 
@@ -37,6 +37,7 @@ class Command(BaseCommand):
             Recipe,
             RecipeIngredient,
             RecipeTag,
+            ShortLink,
             Subscription,
             Tag,
             UserFavoriteRecipes,

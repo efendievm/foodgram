@@ -290,6 +290,16 @@ function App() {
                 loggedIn={loggedIn}
                 loadItem={loadSingleItem}
                 updateOrders={updateOrders}
+                byShortLink={false}
+              />
+            </Route>
+
+            <Route exact path="/recipes/s/:id">
+              <SingleCard
+                loggedIn={loggedIn}
+                loadItem={loadSingleItem}
+                updateOrders={updateOrders}
+                byShortLink={true}
               />
             </Route>
 

@@ -20,7 +20,7 @@ import { useRecipe } from "../../utils/index.js";
 import api from "../../api";
 import { Notification } from "../../components/notification";
 
-const SingleCard = ({ loadItem, updateOrders }) => {
+const SingleCard = ({ loadItem, updateOrders, byShortLink }) => {
   const [loading, setLoading] = useState(true);
   const [notificationPosition, setNotificationPosition] = useState("-100%");
   const [notificationError, setNotificationError] = useState({
@@ -31,7 +31,7 @@ const SingleCard = ({ loadItem, updateOrders }) => {
     useRecipe();
   const authContext = useContext(AuthContext);
   const userContext = useContext(UserContext);
-  const { id } = useParams();
+  let { id } = useParams();
   const history = useHistory();
 
   const handleCopyLink = () => {
@@ -65,10 +65,18 @@ const SingleCard = ({ loadItem, updateOrders }) => {
   };
 
   useEffect((_) => {
-    api
-      .getRecipe({
-        recipe_id: id,
-      })
+    promise = byShortLink
+      ? api
+          .getRecipeByShortLink({
+            recipe_short_link: id,
+          })
+          .then(res => {
+            id = res.json()["id"]
+          })
+      : api.getRecipe({
+          recipe_id: id,
+        })
+      promise
       .then((res) => {
         setRecipe(res);
         setLoading(false);

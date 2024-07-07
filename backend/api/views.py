@@ -4,13 +4,13 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.serializers import SetPasswordSerializer
 from rest_framework import mixins, status, viewsets
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from .permissions import IsAuthorOrReadOnly
-from recipes.models import (Ingredient, Recipe, Subscription, Tag,
-                            UserFavoriteRecipes, UserShoppingCart)
+from recipes.models import (Ingredient, Recipe, ShortLink, Subscription,
+                            Tag, UserFavoriteRecipes, UserShoppingCart)
 from .serializers import (IngredientSerializer, RecipeMinifiedSerializer,
                           RecipeSerializer, TagSerializer,
                           UserCreateSerializer, UserSerializer,
@@ -77,7 +77,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def get_link(self, request, *args, **kwargs):
         get_object_or_404(Recipe, pk=kwargs["pk"])
         link = get_or_create_short_link(kwargs["pk"])
-        link = f'{request.META["HTTP_HOST"]}/{link}'
+        link = f'{request.META["HTTP_HOST"]}/s/{link}'
         return Response(status=status.HTTP_200_OK, data={"short-link": link})
 
     @action(detail=False, methods=["get"])
@@ -224,3 +224,15 @@ class UserViewSet(
                 following, context={"request": request}
             ).data,
         )
+    
+
+@api_view(['GET'])
+def get_recipe(request, short_link):
+    link = get_object_or_404(ShortLink, link=short_link)
+    recipe = (Recipe
+              .detailed
+              .annotate_extra_info(request.user)
+              .get(pk=link.recipe.id))
+    return Response(
+        status=status.HTTP_200_OK,
+        data=RecipeSerializer(recipe, context={"request": request}).data)
