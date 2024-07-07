@@ -291,4 +291,4 @@ class Subscription(models.Model):
 
 class ShortLink(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-    link = models.CharField(max_length=5)
+    link = models.CharField(max_length=5, unique=True)

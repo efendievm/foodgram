@@ -12,6 +12,6 @@ router.register(r"users", UserViewSet, basename="users")
 
 urlpatterns = [
     path("", include(router.urls)),
-    path("s/<str:short_link>", get_recipe),
+    path("s/<str:short_link>/", get_recipe),
     path("auth/", include("djoser.urls.authtoken")),
 ]

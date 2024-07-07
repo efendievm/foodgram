@@ -13,7 +13,7 @@ import styles from "./styles.module.css";
 import Ingredients from "./ingredients";
 import Description from "./description";
 import cn from "classnames";
-import { useRouteMatch, useParams, useHistory } from "react-router-dom";
+import { useRouteMatch, useParams, useHistory} from "react-router-dom";
 import MetaTags from "react-meta-tags";
 import DefaultImage from "../../images/userpic-icon.jpg";
 import { useRecipe } from "../../utils/index.js";
@@ -31,7 +31,7 @@ const SingleCard = ({ loadItem, updateOrders, byShortLink }) => {
     useRecipe();
   const authContext = useContext(AuthContext);
   const userContext = useContext(UserContext);
-  let { id } = useParams();
+  const { id } = useParams();
   const history = useHistory();
 
   const handleCopyLink = () => {
@@ -65,25 +65,34 @@ const SingleCard = ({ loadItem, updateOrders, byShortLink }) => {
   };
 
   useEffect((_) => {
-    promise = byShortLink
-      ? api
-          .getRecipeByShortLink({
-            recipe_short_link: id,
-          })
-          .then(res => {
-            id = res.json()["id"]
-          })
-      : api.getRecipe({
-          recipe_id: id,
-        })
-      promise
+    if (byShortLink)
+    {
+      api
+      .getRecipeByShortLink({
+        recipe_short_link: id,
+      })
       .then((res) => {
-        setRecipe(res);
-        setLoading(false);
+        history.push(`/recipes/${res["id"]}`)
       })
       .catch((err) => {
         history.push("/not-found");
       });
+    }
+    else
+    {
+      api
+        .getRecipe({
+          recipe_id: id,
+        })
+        .then((res) => {
+          setRecipe(res);
+          setLoading(false);
+        })
+        .catch((err) => {
+          history.push("/not-found");
+        })
+    }
+    ;
   }, []);
 
   const { url } = useRouteMatch();

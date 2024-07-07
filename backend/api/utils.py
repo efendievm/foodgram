@@ -45,13 +45,16 @@ class RecipeFilterSet(FilterSet):
 
 
 def get_or_create_short_link(recipe_id):
-    chars = ascii_letters + digits
-    links = list(ShortLink.objects.values("link"))
-    link = __create_random_link(chars)
-    while link in links:
+    try:
+        return ShortLink.objects.get(recipe_id=recipe_id).link
+    except ShortLink.DoesNotExist:
+        chars = ascii_letters + digits
+        links = list(ShortLink.objects.values("link"))
         link = __create_random_link(chars)
-    ShortLink.objects.create(recipe_id=recipe_id, link=link)
-    return link
+        while link in links:
+            link = __create_random_link(chars)
+        ShortLink.objects.create(recipe_id=recipe_id, link=link)
+        return link
 
 
 def __create_random_link(chars):

@@ -293,8 +293,8 @@ function App() {
                 byShortLink={false}
               />
             </Route>
-
-            <Route exact path="/recipes/s/:id">
+           
+            <Route exact path="/s/:id">
               <SingleCard
                 loggedIn={loggedIn}
                 loadItem={loadSingleItem}

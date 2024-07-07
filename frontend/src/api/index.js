@@ -172,7 +172,7 @@ class Api {
   getRecipeByShortLink({ recipe_short_link }) {
     const token = localStorage.getItem("token");
     const authorization = token ? { authorization: `Token ${token}` } : {};
-    return fetch(`/api/recipes/s/${recipe_short_link}/`, {
+    return fetch(`/api/s/${recipe_short_link}/`, {
       method: "GET",
       headers: {
         ...this._headers,
