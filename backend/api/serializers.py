@@ -1,52 +1,12 @@
 from django.db import transaction
 from django.contrib.auth import get_user_model
-from django.core.validators import RegexValidator
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from rest_framework.validators import UniqueValidator
 
 from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
 from .utils import Base64ImageField
 
 User = get_user_model()
-
-
-class UserCreateSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(
-        max_length=150,
-        validators=[
-            RegexValidator(regex=r'^[\w.@+-]+\Z'),
-            UniqueValidator(queryset=User.objects.all()),
-        ],
-    )
-    first_name = serializers.CharField(max_length=150)
-    last_name = serializers.CharField(max_length=150)
-    email = serializers.EmailField(
-        validators=[UniqueValidator(queryset=User.objects.all())]
-    )
-
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        data.pop('password')
-        return data
-
-    def create(self, validated_data):
-        password = validated_data.pop('password')
-        user = super().create(validated_data)
-        user.set_password(password)
-        user.save()
-        return user
-
-    class Meta:
-        model = User
-        fields = (
-            'id',
-            'username',
-            'first_name',
-            'last_name',
-            'email',
-            'password'
-        )
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -170,6 +130,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         self.__set_ingredients(recipe, ingredients)
         return recipe
 
+    @transaction.atomic
     def update(self, instance, validated_data):
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')

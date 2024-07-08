@@ -1,8 +1,10 @@
+from io import BytesIO
+
 from django.contrib.auth import get_user_model
 from django.http.response import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from djoser.serializers import SetPasswordSerializer
+from djoser.serializers import SetPasswordSerializer, UserCreateSerializer
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action, api_view
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -12,8 +14,7 @@ from .permissions import IsAuthorOrReadOnly
 from recipes.models import (Ingredient, Recipe, ShortLink, Subscription,
                             Tag, UserFavoriteRecipes, UserShoppingCart)
 from .serializers import (IngredientSerializer, RecipeMinifiedSerializer,
-                          RecipeSerializer, TagSerializer,
-                          UserCreateSerializer, UserSerializer,
+                          RecipeSerializer, TagSerializer, UserSerializer,
                           UserSetAvatarSerializer, UserWithRecipesSerializer)
 from .services import get_shopping_list
 from .utils import (Pagination, RecipeFilterSet, SearchFilter,
@@ -84,7 +85,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def download_shopping_cart(self, request, *args, **kwargs):
         shopping_list = get_shopping_list(request.user)
         return FileResponse(
-            shopping_list,
+            BytesIO(shopping_list.encode('utf-8')),
             as_attachment=True,
             filename='shopping_list.txt'
         )
