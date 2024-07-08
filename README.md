@@ -2,3 +2,5 @@
 
 По адресу http://localhost изучите фронтенд веб-приложения, а по адресу http://localhost/api/docs/ — спецификацию API.
 
+ip сервера: 51.250.109.124
+email и пароль админской учетки: admin@admin.com realystrongpassword1352
